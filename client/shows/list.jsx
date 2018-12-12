@@ -5,6 +5,7 @@ import Button from 'material-ui/Button'
 import Avatar from 'material-ui/Avatar'
 import AddIcon from 'material-ui-icons/Add'
 import Typography from 'material-ui/Typography'
+import TextField from 'material-ui/TextField'
 import Dialog, { DialogTitle } from 'material-ui/Dialog'
 import List, { ListItem, ListItemAvatar } from 'material-ui/List'
 import Table, { TableBody, TableCell, TableHead, TableRow } from 'material-ui/Table'
@@ -22,6 +23,7 @@ module.exports = createReactClass({
       allSpeakers: [],
       allSponsors: [],
       allHosts: [],
+      drinksjs: {},
       _status: 'READY',
       _deployStatus: 'READY'
     }
@@ -81,6 +83,7 @@ module.exports = createReactClass({
               <TableCell>Speaker 2</TableCell>
               <TableCell>Sponsor 1</TableCell>
               <TableCell>Sponsor 2</TableCell>
+              <TableCell>Drinks Js</TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
@@ -95,6 +98,7 @@ module.exports = createReactClass({
                 <TableCell>{this.renderContributor('speakers', exp.speaker2, exp.date)}</TableCell>
                 <TableCell>{this.renderContributor('sponsors', exp.sponsor1, exp.date)}</TableCell>
                 <TableCell>{this.renderContributor('sponsors', exp.sponsor2, exp.date)}</TableCell>
+                <TableCell>{this.renderContributor('drinksjs', exp.drinksjs, exp.date)}</TableCell>
               </TableRow>
             )) }
           </TableBody>
@@ -107,7 +111,8 @@ module.exports = createReactClass({
     var fn = {
       'hosts': this.renderHostDialog,
       'sponsors': this.renderSponsorDialog,
-      'speakers': this.renderSpeakerDialog
+      'speakers': this.renderSpeakerDialog,
+      'drinksjs': this.renderDrinksjsDialog
     }[this.state.addType]
 
     if (!fn) return <div />
@@ -198,6 +203,39 @@ module.exports = createReactClass({
     )
   },
 
+  renderDrinksjsDialog (date) {
+    return (
+      <Dialog onRequestClose={this.closeAddDialog} open>
+        <DialogTitle>Edit drinksjs</DialogTitle>
+        <div style={{width: '300px', padding: '40px'}}>
+          <div><TextField
+            fullWidth
+            label='Name'
+            onChange={this.editDrinksjs}
+            name='name'
+            margin='normal'
+            value={this.state.drinksjs.name || ''} />
+          </div>
+          <div><TextField
+            fullWidth
+            label='Address'
+            onChange={this.editDrinksjs}
+            name='address'
+            margin='normal'
+            value={this.state.drinksjs.address || ''} />
+          </div>
+          <Button
+            raised
+            color='primary'
+            onClick={this.updateDrinksjs}
+            style={{marginLeft: 10}} >
+          Update
+        </Button>
+        </div>
+      </Dialog>
+    )
+  },
+
   renderContributor (type, contributor, date) {
     if (!contributor) {
       return (
@@ -209,6 +247,32 @@ module.exports = createReactClass({
         }} >
           <AddIcon />
         </Button>
+      )
+    }
+
+    if (type === 'drinksjs') {
+      let drinksjsState = {}
+      let currentDrinksjs = this.state.shows.filter((show) => {
+        return show.date === date
+      })[0].drinksjs
+      if (currentDrinksjs) {
+        drinksjsState = currentDrinksjs
+      }
+      return (
+        <div style={{textAlign: 'center'}}
+          onClick={() => {
+            this.setState({
+              addType: type,
+              addDate: date,
+              drinksjs: drinksjsState
+            })
+          }}>
+          <img src='https://js.la/images/drinks.svg' style={{width: 50}} />
+          <br />
+          <a href='#'>
+            {contributor.organization || contributor.name}
+          </a>
+        </div>
       )
     }
 
@@ -257,14 +321,14 @@ module.exports = createReactClass({
   getList () {
     this.setState({_status: 'LOADING'})
 
-    var conceptNames = ['speaker', 'host', 'sponsor']
+    var conceptNames = ['speaker', 'host', 'sponsor', 'drinksjs']
     map(conceptNames, api.list, (err, concepts) => {
       if (err) {
         this.setState({_status: 'ERROR'})
         return console.error(err)
       }
 
-      var [speakers, hosts, sponsors] = concepts
+      var [speakers, hosts, sponsors, drinksjs] = concepts
 
       var shows = showDates.map(function (date) {
         var month = date.slice(0, 7)
@@ -280,13 +344,18 @@ module.exports = createReactClass({
           return (sponsor.bookedShows || '').match(month)
         })
 
+        var drinksjsMatch = drinksjs.filter(function (drinks) {
+          return (drinks.bookedShows || '').match(month)
+        })
+
         return {
           date: date,
           host: hostMatch[0],
           speaker1: speakerMatch[0],
           speaker2: speakerMatch[1],
           sponsor1: sponsorMatch[0],
-          sponsor2: sponsorMatch[1]
+          sponsor2: sponsorMatch[1],
+          drinksjs: drinksjsMatch[0]
         }
       })
 
@@ -307,8 +376,30 @@ module.exports = createReactClass({
   closeAddDialog () {
     this.setState({
       addType: null,
-      addDate: null
+      addDate: null,
+      drinksjs: {}
     })
+  },
+
+  editDrinksjs (event) {
+    var drinksjs = this.state.drinksjs
+    var {name, value} = event.target
+
+    drinksjs[name] = value
+
+    this.setState({ drinksjs: drinksjs })
+  },
+
+  updateDrinksjs (event) {
+    var drinksjs = this.state.drinksjs
+
+    var month = this.state.addDate.slice(0, 7)
+    var showsMatch = this.state.shows.filter(function (show) {
+      return (show.date || '').match(month)
+    })
+    drinksjs.id = showsMatch.length > 0 && showsMatch[0].drinksjs ? showsMatch[0].drinksjs.id : generateUniqeId()
+
+    this.bookContributor('drinksjs', drinksjs, this.state.addDate)
   },
 
   bookContributor (type, contributor, date) {
@@ -322,7 +413,7 @@ module.exports = createReactClass({
       }, {})
     ).join('\n')
 
-    this.setState({_status: 'LOADING', addDate: null, addType: null})
+    this.setState({_status: 'LOADING', addDate: null, addType: null, drinksjs: {}})
     api.update(type, contributor, (err, updated) => {
       if (err) {
         this.setState({_status: 'ERROR'})
@@ -340,4 +431,13 @@ function truncate (str, len) {
   if (str.length <= len) return str
 
   return str.slice(0, len - 3) + '...'
+}
+
+function generateUniqeId () {
+  var text = ''
+  var possible = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789'
+
+  for (var i = 0; i < 28; i++) { text += possible.charAt(Math.floor(Math.random() * possible.length)) }
+
+  return text
 }
