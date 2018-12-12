@@ -38,7 +38,7 @@ module.exports = createReactClass({
       <div style={{padding: 40}}>
         { this.renderDeploy() }
 
-        <h1>Shows List</h1>
+        <h1>Talks List</h1>
 
         { {
           'READY': this.renderMain,
@@ -264,7 +264,7 @@ module.exports = createReactClass({
             this.setState({
               addType: type,
               addDate: date,
-              drinksjs: drinksjsState
+              drinksjs: Object.assign({}, drinksjsState)
             })
           }}>
           <img src='https://js.la/images/drinks.svg' style={{width: 50}} />
@@ -370,7 +370,7 @@ module.exports = createReactClass({
   },
 
   editShow (name) {
-    navigate(`/shows/edit/${name}`)
+    navigate(`/talks/edit/${name}`)
   },
 
   closeAddDialog () {

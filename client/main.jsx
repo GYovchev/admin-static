@@ -87,9 +87,9 @@ module.exports = createReactClass({
             <ListItem
               button
               component='a'
-              href='#/shows'
+              href='#/talks'
               onClick={this.handleDrawerClose}>
-              <ListItemText primary='Shows' />
+              <ListItemText primary='Talks' />
             </ListItem>
             <ListItem
               button

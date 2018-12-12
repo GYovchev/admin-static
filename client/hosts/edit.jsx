@@ -52,7 +52,7 @@ module.exports = createReactClass({
         }} />
 
         <TextField
-          label='Booked Shows'
+          label='Booked Talks'
           onChange={this.changeHost}
           name='bookedShows'
           margin='normal'
