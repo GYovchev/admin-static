@@ -157,6 +157,13 @@ module.exports = createReactClass({
           style={{marginLeft: 10}} >
           Update
         </Button>
+
+        <Button
+          raised
+          onClick={this.removeSponsor}
+          style={{marginLeft: 10, backgroundColor: 'red', color: 'white'}} >
+          Delete
+        </Button>
       </div>
     )
   },
@@ -227,4 +234,18 @@ module.exports = createReactClass({
       })
     })
   },
+
+  removeSponsor () {
+    if (!window.confirm('Are you sure you want to delete this')) return
+    var id = this.state.sponsor.id
+    this.setState({_status: 'LOADING'})
+    api.removeSponsor(id, (err) => {
+      if (err) {
+        this.setState({_status: 'ERROR'})
+        return console.error(err)
+      }
+    })
+
+    window.location.href = '#/sponsors'
+  }
 })

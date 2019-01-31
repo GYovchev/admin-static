@@ -12,18 +12,24 @@ module.exports = {
   updateSpeaker,
   updateSponsor,
   updateHost,
+  removeSpeaker,
+  removeSponsor,
+  removeHost,
   list,
   update,
   triggerDeploy
 }
 
 function getHost (id, cb) { get('host', id, cb) }
+function removeHost (id, cb) { remove('host', id, cb) }
 function listHosts (cb) { list('host', cb) }
 function updateHost (host, cb) { update('host', host, cb) }
 function getSpeaker (id, cb) { get('speaker', id, cb) }
+function removeSpeaker (id, cb) { remove('speaker', id, cb) }
 function listSpeakers (cb) { list('speaker', cb) }
 function updateSpeaker (speaker, cb) { update('speaker', speaker, cb) }
 function getSponsor (id, cb) { get('sponsor', id, cb) }
+function removeSponsor (id, cb) { remove('sponsor', id, cb) }
 function listSponsors (cb) { list('sponsor', cb) }
 function updateSponsor (sponsor, cb) { update('sponsor', sponsor, cb) }
 
@@ -52,6 +58,11 @@ function get (type, id, cb) {
 
     cb(null, item)
   })
+}
+
+function remove (type, id, cb) {
+  var url = `${API}/api/remove/${type}/${id}`
+  auth.get(url, cb)
 }
 
 function update (type, item, cb) {

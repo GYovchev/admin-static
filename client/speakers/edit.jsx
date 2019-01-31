@@ -187,6 +187,13 @@ module.exports = createReactClass({
           style={{marginLeft: 10}} >
           Update
         </Button>
+
+        <Button
+          raised
+          onClick={this.removeSpeaker}
+          style={{marginLeft: 10, backgroundColor: 'red', color: 'white'}} >
+          Delete
+        </Button>
       </div>
     )
   },
@@ -256,5 +263,19 @@ module.exports = createReactClass({
         _status: 'READY'
       })
     })
+  },
+
+  removeSpeaker () {
+    if (!window.confirm('Are you sure you want to delete this')) return
+    var id = this.state.speaker.id
+    this.setState({_status: 'LOADING'})
+    api.removeSpeaker(id, (err) => {
+      if (err) {
+        this.setState({_status: 'ERROR'})
+        return console.error(err)
+      }
+    })
+
+    window.location.href = '#/speakers'
   }
 })

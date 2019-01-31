@@ -188,6 +188,13 @@ module.exports = createReactClass({
           style={{marginLeft: 10}} >
           Update
         </Button>
+
+        <Button
+          raised
+          onClick={this.removeHost}
+          style={{marginLeft: 10, backgroundColor: 'red', color: 'white'}} >
+          Delete
+        </Button>
       </div>
     )
   },
@@ -257,5 +264,19 @@ module.exports = createReactClass({
         _status: 'READY'
       })
     })
+  },
+
+  removeHost () {
+    if (!window.confirm('Are you sure you want to delete this')) return
+    var id = this.state.host.id
+    this.setState({_status: 'LOADING'})
+    api.removeHost(id, (err) => {
+      if (err) {
+        this.setState({_status: 'ERROR'})
+        return console.error(err)
+      }
+    })
+
+    window.location.href = '#/hosts'
   }
 })
