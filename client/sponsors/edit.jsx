@@ -53,7 +53,7 @@ module.exports = createReactClass({
         }} />
 
         <TextField
-          label='Booked Shows'
+          label='Booked Talks'
           onChange={this.changeSponsor}
           name='bookedShows'
           margin='normal'

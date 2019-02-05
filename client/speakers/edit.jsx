@@ -65,7 +65,7 @@ module.exports = createReactClass({
         }} />
 
         <TextField
-          label='Booked Shows'
+          label='Booked Talks'
           onChange={this.editSpeaker}
           name='bookedShows'
           margin='normal'

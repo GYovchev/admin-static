@@ -36,7 +36,7 @@ module.exports = createReactClass({
       <div style={{padding: 40}}>
         { this.renderDeploy() }
 
-        <h1>Shows List</h1>
+        <h1>Talks List</h1>
 
         { {
           'READY': this.renderMain,
@@ -301,7 +301,7 @@ module.exports = createReactClass({
   },
 
   editShow (name) {
-    navigate(`/shows/edit/${name}`)
+    navigate(`/talks/edit/${name}`)
   },
 
   closeAddDialog () {

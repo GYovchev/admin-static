@@ -16,7 +16,7 @@ router.set('/speakers/edit/:name', restrict(require('./speakers/edit.jsx')))
 router.set('/sponsors', restrict(require('./sponsors/list.jsx')))
 router.set('/sponsors/edit/:name', restrict(require('./sponsors/edit.jsx')))
 
-router.set('/shows', restrict(require('./shows/list.jsx')))
+router.set('/talks', restrict(require('./shows/list.jsx')))
 
 router.set('/login', auth.login)
 router.set('/logout', auth.logout)
